@@ -3,8 +3,6 @@
 
 A SIGBOVIK 2026 research project that simulates a full corporate C-suite using a panel of LLM agents, runs them through a real company's fiscal year, and compares their strategic decisions and simulated outcomes against what the actual leadership team did.
 
-The company is anonymous. The data is real.
-
 ---
 
 ## What it does
@@ -18,7 +16,7 @@ At the end, simulated outcomes (revenue delta, profit margin, cash, headcount) a
 ## How it works
 
 ### Agents
-Ten AIEs map to real C-suite titles: CEO, CFO, COO, CPO, CTO, CMO, CCO, VP&Chair, EVP Strategy, and EVP Global Sales. Each agent has role-specific AES weight vectors that determine how they evaluate proposed actions, and domain expertise bonuses that amplify their voting influence in their primary area.
+Ten AIEs map to real C-suite titles: CEO, CFO, COO, CPO, CTO, CMO, CCO, VP&Chair, EVP Strategy, and EVP Global Sales. Each agent has role-specific weight vectors that determine how they evaluate proposed actions, and domain expertise bonuses that amplify their voting influence in their primary area.
 
 ### Decision loop (per quarter)
 1. **Qualitative extraction (Prompt C)** — Claude reads the earnings transcript, press release, and product release list and derives quantitative signals: hiring freeze, layoff activity, headcount estimates, AI investment focus, competitive pressure, investor sentiment, etc.
@@ -54,67 +52,6 @@ Domain bonus = 2 if the action falls in the agent's primary domain, else 0. So a
 FinalDecisionScore(a) = Σ VoteWeight_agent,i  across all agents
 action passes if FinalDecisionScore(a) > 0
 ```
-
----
-
-## Project structure
-
-```
-csuite/
-│
-├── main.py                        # Entry point
-├── test_parse.py                  # Parser validation — no API calls
-├── config.py                      # Paths, API config, quarter directory map
-├── .env                           # ANTHROPIC_API_KEY (never commit)
-│
-├── data/
-│   ├── input/
-│   │   ├── FY22Q4/                # Init quarter asset files
-│   │   └── FY2023/
-│   │       ├── Q1/
-│   │       │   ├── FY23Q1-zip/    # Earnings assets (XLS, DOCX, PPTX)
-│   │       │   └── FY23 Q1 - Performance - Investor Relations
-│   │       ├── Q2/  ...
-│   │       ├── Q3/  ...
-│   │       └── Q4/  ...
-│   └── processed/                 # Output: one CompanyState JSON per quarter
-│
-├── util/
-│   ├── parse_financials.py        # XLS → Financials + Segments dict
-│   └── parse_qualitative.py       # DOCX / PPTX / PDF → plain text
-│
-├── prompts/
-│   └── prompt_c_derive_qualitative_data.py   # Prompt C builder
-│
-├── agents/                        # (simulation phase)
-│   └── board.py                   # 10 AIE agents with AES weights + archetypes
-│
-├── simulation/                    # (simulation phase)
-│   ├── company_state.py           # CompanyState dataclass
-│   ├── action_library.py          # 30 actions + AES category map
-│   ├── voting_engine.py           # AES → vote → AWS → DecisionScore
-│   └── pipeline.py                # Quarterly loop orchestrator
-│
-└── results/                       # Per-quarter simulation logs (JSON)
-```
-
----
-
-## Asset files per quarter
-
-| File | Type | Used for |
-|---|---|---|
-| `FinancialStatementFY23Qn.xlsx` | XLSX | Direct financial + segment data |
-| `TranscriptFY23Qn.docx` | DOCX | Prompt C — qualitative signals |
-| `PressReleaseFY23Qn.docx` | DOCX | Prompt C — factual announcements |
-| `FY23QnProductList.docx` | DOCX | Prompt C — product release signals |
-| `OutlookFY23Qn.pptx` | PPTX | Prompt C — forward guidance (if text-based) |
-| `SlidesFY23Qn.pptx` | PPTX | Prompt C — earnings slides (if text-based) |
-| `FY23 Qn - Performance - ...pdf` | PDF | Prompt C — performance metrics |
-| `Metrics_FY23Qn.xlsx` | XLSX | Not used (investor metrics, redundant) |
-| `COMPANY_FY23Qn_10Q.docx` | DOCX | Not used (SEC filing, too long) |
-
-> Note: This company's earnings PPTX files (Slides, Outlook) are fully image-based and yield no extractable text. Prompt C runs on the transcript, press release, and product list instead — which together contain all the qualitative signal needed.
 
 ---
 
