@@ -20,12 +20,11 @@ import anthropic
 
 from config import (
     ANTHROPIC_API_KEY, MODEL, MAX_TOKENS,
-    DATA_PROCESSED, QUARTER_DIRS, ALL_QUARTERS,
+    DATA_PROCESSED, QUARTER_CONFIG, ALL_QUARTERS,
 )
 from util.parse_financials import parse_financials
 from util.parse_qualitative import load_qualitative_docs
 from prompts.prompt_c_derive_qualitative_data import build_prompt_c
-
 
 # ── Anthropic helper ───────────────────────────────────────────────────────────
 
@@ -124,7 +123,7 @@ def process_quarter(quarter: str, dry_run: bool = False) -> bool:
     Full parse → derive → merge → write flow for one quarter.
     Returns True on success.
     """
-    quarter_dir = QUARTER_DIRS.get(quarter)
+    quarter_dir = QUARTER_CONFIG.get(quarter, {}).get("quarter_dir")
 
     if not quarter_dir or not quarter_dir.exists():
         print(f"  [SKIP] directory not found: {quarter_dir}")
@@ -143,7 +142,8 @@ def process_quarter(quarter: str, dry_run: bool = False) -> bool:
         print(f"  Financials: no XLS/XLSX found in {quarter_dir}")
 
     # ── Step 2: Parse qualitative documents ───────────────────────────────────
-    docs = load_qualitative_docs(quarter_dir)
+    performance_dir = QUARTER_CONFIG.get(quarter, {}).get("performance_dir")
+    docs = load_qualitative_docs(quarter_dir, performance_dir)
     found = [k for k, v in docs.items() if v]
     missing = [k for k, v in docs.items() if not v]
     print(f"  Documents found:   {found if found else 'none'}")
