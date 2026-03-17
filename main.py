@@ -94,7 +94,7 @@ def build_company_state(quarter: str, financials: dict, derived: dict | None) ->
             "personal_computing_revenue":  financials.get("personal_computing_revenue", 0.0),
         },
         "Human_Impacts": {
-            "total_employees":        0,      # set manually — not in earnings files
+            "total_employees":        TOTAL_EMPLOYEES.get(quarter, 0),  
             "hiring_freeze":          hi.get("hiring_freeze", False),
             "layoffs_this_quarter":   hi.get("layoffs_this_quarter", False),
             "engineering_headcount":  hi.get("engineering_headcount"),
