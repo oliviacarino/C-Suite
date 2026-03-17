@@ -14,8 +14,8 @@ Flow per quarter:
   8. Write results log to results/<QUARTER>_simulation_log.json
 
 Entry points:
-  run_quarter(quarter)     — simulate one quarter, returns QuarterLog
-  run_simulation()         — simulate all four FY2023 quarters in sequence
+  run_quarter(quarter)  — simulate one quarter, returns QuarterLog
+  run_simulation()      — simulate all four FY2023 quarters in sequence
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ from config import (
     SIMULATION_QUARTERS, DECISION_THRESHOLD, TOP_K_ACTIONS,
 )
 from agents.board import BOARD
-from sim.action_library import ACTION_PRIMARY_CATEGORY, Action
+from sim.action_library import ACTION_PRIMARY_CATEGORY
 from sim.voting_engine import score_action, select_top_actions, ActionResult
 from prompts.prompt_d_aie_proposal import build_prompt_d
 from prompts.prompt_a_effect_prediction import build_prompt_a
@@ -40,7 +40,6 @@ from prompts.prompt_b_state_transition import build_prompt_b
 
 
 # ── External context per quarter ───────────────────────────────────────────────
-# Summarizes the real-world tech landscape the AIEs are aware of each quarter.
 EXTERNAL_CONTEXT: dict[str, str] = {
     "FY23Q1": (
         "ChatGPT launched November 2022 and has rapidly entered mainstream "
@@ -77,9 +76,9 @@ EXTERNAL_CONTEXT: dict[str, str] = {
 class QuarterLog:
     quarter:             str
     company_state_start: dict
-    proposals:           dict    # {agent_title: [action_names]}
-    effects:             dict    # {action_name: effects_dict}
-    action_results:      list    # serialized ActionResult list
+    proposals:           dict
+    effects:             dict
+    action_results:      list
     approved_actions:    list[str]
     company_state_end:   dict
 
@@ -104,11 +103,10 @@ def _call_claude(prompt: dict) -> dict:
 # ── Action category lookup ─────────────────────────────────────────────────────
 
 def _get_action_category(action_name: str) -> str:
-    """Return the primary AES category for an action name string."""
     for action_enum, category in ACTION_PRIMARY_CATEGORY.items():
         if action_enum.value == action_name:
             return category
-    return "revenue"   # fallback
+    return "revenue"
 
 
 # ── Per-quarter simulation ─────────────────────────────────────────────────────
@@ -119,7 +117,6 @@ def run_quarter(quarter: str, verbose: bool = True) -> QuarterLog:
     Loads CompanyState from data/processed/, runs the full loop,
     writes a results log, and returns the QuarterLog.
     """
-
     def log(msg: str):
         if verbose:
             print(f"  [{quarter}] {msg}")
@@ -209,24 +206,36 @@ def run_quarter(quarter: str, verbose: bool = True) -> QuarterLog:
 def run_simulation(verbose: bool = True) -> list[QuarterLog]:
     """
     Simulate all four FY2023 quarters in sequence.
-    Each quarter loads its own CompanyState from data/processed/.
-    Returns list of all QuarterLogs.
+    Carries simulated headcount forward from each quarter's end state
+    into the next quarter's CompanyState JSON before loading.
     """
     print("\n" + "=" * 60)
     print("  C-Suite Simulation — FY2023")
     print("=" * 60)
 
     all_logs: list[QuarterLog] = []
+    simulated_headcount: int | None = None
 
     for quarter in SIMULATION_QUARTERS:
-        print(f"\n{'─' * 60}")
-        print(f"  Simulating {quarter}")
-        print(f"{'─' * 60}")
+        # update headcount with prev quarter's headcount
+        if simulated_headcount is not None:
+            state_path = DATA_PROCESSED / f"{quarter}_company_state.json"
+            state = json.loads(state_path.read_text())
+            state["Human_Impacts"]["total_employees"] = simulated_headcount
+            state_path.write_text(json.dumps(state, indent=2))
+
         log_entry = run_quarter(quarter, verbose=verbose)
         all_logs.append(log_entry)
 
+        # capture end state headcount for next quarter
+        simulated_headcount = (
+            log_entry.company_state_end
+            .get("Human_Impacts", {})
+            .get("total_employees")
+        )
+
     print("\n" + "=" * 60)
-    print(f"  Simulation complete.")
+    print("  Simulation complete.")
     print(f"  Logs written to: {RESULTS_DIR}")
     print("=" * 60)
 

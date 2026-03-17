@@ -21,10 +21,12 @@ import anthropic
 from config import (
     ANTHROPIC_API_KEY, MODEL, MAX_TOKENS,
     DATA_PROCESSED, QUARTER_CONFIG, ALL_QUARTERS,
+    TOTAL_EMPLOYEES
 )
 from util.parse_financials import parse_financials
 from util.parse_qualitative import load_qualitative_docs
 from prompts.prompt_c_derive_qualitative_data import build_prompt_c
+from sim.pipeline import run_simulation, run_quarter
 
 # ── Anthropic helper ───────────────────────────────────────────────────────────
 
@@ -195,8 +197,28 @@ def main():
         "--dry-run", action="store_true",
         help="Parse files and print findings — no API calls",
     )
+    parser.add_argument(
+        "--simulate", action="store_true",
+        help="Run full FY2023 simulation (all 4 quarters)",
+    )
+    parser.add_argument(
+        "--quarter", type=str, default=None,
+        help="Simulate a single quarter (e.g. FY23Q1)",
+    )
     args = parser.parse_args()
 
+    # ── Simulation mode ────────────────────────────────────────────────────────
+    if args.simulate:
+        if not ANTHROPIC_API_KEY:
+            print("Error: ANTHROPIC_API_KEY not set.")
+            sys.exit(1)
+        if args.quarter:
+            run_quarter(args.quarter, verbose=True)
+        else:
+            run_simulation(verbose=True)
+        return
+
+    # ── Parsing mode (existing logic below) ───────────────────────────────────
     if not args.dry_run and not ANTHROPIC_API_KEY:
         print("Error: ANTHROPIC_API_KEY not set. Add it to your .env file.")
         sys.exit(1)
