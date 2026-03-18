@@ -221,7 +221,6 @@ Domain bonus = 2 if the action falls in the agent's primary domain, else 0.
 
 <img src="./images/Final_Decision_Score.png" width="400"/>
 
----
 
 ## Project structure
 
@@ -275,7 +274,6 @@ csuite/
     └── charts/
 ```
 
----
 
 ## Setup
 
@@ -287,7 +285,6 @@ pip install -r requirements.txt
 
 Create `.env` in the project root with your `ANTHROPIC_API_KEY`
 
----
 
 ## Running
 
@@ -322,7 +319,6 @@ python util/compare.py           # prints table + displays charts
 python util/compare.py --save    # saves charts to results/charts/
 ```
 
----
 
 ## CompanyState vector
 
@@ -357,13 +353,10 @@ CompanyState = {
 }
 ```
 
----
 
 ## Action library
 
 30 actions across 8 categories: R&D Investment, Innovation Index, Revenue, Brand Strength, Headcount, Operating Cost, Cash Reserves, and Multi-category / Governance. Each AIE proposes up to 3 actions per quarter from this fixed list. The top 5 determined by the `FinalDecisionScore` are implemented each quarter.
-
----
 
 ## Known limitations
 
@@ -375,7 +368,6 @@ CompanyState = {
 
 **`total_employees`** is not available in quarterly earnings files and must be initially set manually in `config.py`. Simulated headcount compounds forward from each quarter's end state across the four-quarter run.
 
----
 
 ## Research questions
 
