@@ -17,7 +17,7 @@ Note that this is a very, *very* satirical take on the latest trend in tech: job
 
 ## *TLDR*
 
-Four simulations were run in total: a baseline with the standard 10-agent board, and two ablations testing different board configurations.
+Three simulations were run in total: a baseline with the standard 10-agent board, and two ablations testing different board configurations.
 
 Across all runs, two things held constant: the board always identified the correct strategic direction (AI-heavy, cloud-forward investment) simulating what the actual company did, and cash was always significantly underestimated due to the `ActionLibrary`'s absence of financing decisions. 
 
