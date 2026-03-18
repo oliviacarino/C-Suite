@@ -53,7 +53,7 @@ Each quarter's AIE board received the simulated financial state and external mar
 
 **Operating margin — diverged significantly by year-end.** Q1 margin was close (+1.0%), but the gap widened steadily through the year, reaching −8.7% by Q4. The AI board prioritized growth actions (R&D, hiring, capex) over cost discipline, which is directionally what the real company did, but the simulation didn't capture the operational efficiencies the actual company achieved alongside its investments. By Q4 the simulated company was spending aggressively without the margin management the real executives applied.
 
-**Cash — largest and most consistent divergence.** The simulation depleted cash steadily across all four quarters, ending Q4 with only $8.2B vs the actual $34.7B — a $26.5B gap. This is the expected consequence of a known design limitation: the ActionLibrary does not model financing decisions (share buybacks, debt issuance, dividend management) that the actual company  actively used to maintain its cash position. The AI board spent heavily on approved actions without any offsetting capital management.
+**Cash — largest and most consistent divergence.** The simulation depleted cash steadily across all four quarters, ending Q4 with only $8.2B vs the actual $34.7B — a $26.5B gap. This is the expected consequence of a known design limitation: the `ActionLibrary` does not model financing decisions (share buybacks, debt issuance, dividend management) that the actual company  actively used to maintain its cash position. The AI board spent heavily on approved actions without any offsetting capital management.
 
 **Headcount — overestimated and compounding.** The simulation consistently hired more aggressively than the real company, with the gap growing from +11K in Q1 to +26K by Q4. This reflects the board's tendency to approve both `increase_engineering_hiring` and growth-oriented actions simultaneously each quarter, with headcount compounding forward. The real company was more measured in its hiring pace.
 
@@ -247,7 +247,7 @@ CompanyState = {
 
 ## Known limitations
 
-**Cash modeling** is the weakest dimension. The ActionLibrary does not include financing decisions (share buybacks, dividend payments, debt management) which the actual company actively used to manage cash. This accounts for the largest deltas in the comparison results.
+**Cash modeling** is the weakest dimension. The `ActionLibrary` does not include financing decisions (share buybacks, dividend payments, debt management) which the actual company actively used to manage cash. This accounts for the largest deltas in the comparison results.
 
 **PPTX files** (earnings slides, outlook) for this company are fully image-based and yield no extractable text. Prompt C runs on the transcript, press release, and product list instead.
 
