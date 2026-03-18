@@ -9,6 +9,22 @@ At the end, simulated outcomes (revenue delta, profit margin, cash, headcount) a
 
 Note that this is a very, *very* satirical take on the latest trend in tech: job automation.
 
+## Research questions
+
+1. Does an AI-simulated C-suite produce decisions measurably different from its human-led counterpart?
+2. Do those decisions lead to better, worse, or statistically indistinguishable simulated outcomes?
+3. *(Optional)* Does multi-agent executive communication improve decision quality?
+
+## *TLDR*
+
+Four simulations were run in total: a baseline with the standard 10-agent board, and two ablations testing different board configurations.
+
+Across all runs, two things held constant: the board always identified the correct strategic direction (AI-heavy, cloud-forward investment) simulating what the actual company did, and cash was always significantly underestimated due to the `ActionLibrary`'s absence of financing decisions. 
+
+What varied was the growth/restraint tradeoff. The baseline 10-agent board overshot revenue in every quarter, peaking at +$8.5B in Q4, and hired aggressively throughout. The conservative CFO in Run 1 moderated headcount meaningfully (Q3 gap narrowed from +23K to +7.6K) but had almost no effect on cash. The personality swap in Run 2 produced the most interesting emergent behavior - the board self-corrected in Q4, undershooting revenue for the first time and recovering cash slightly, driven purely by the deteriorating state it had created.
+
+The through-line: no configuration found the balance the real company achieved between growth investment and financial discipline. The real executives' edge wasn't strategic vision - the AI board got that right. It was knowing when to stop.
+
 ## Results
 
 The simulation seeds from real FY22Q4 financial data. Each subsequent quarter uses only the previous quarter's simulated end state - no real FY2023 data is used during the simulation. The AIE board operates entirely on its own compounding decisions after the seed.
@@ -73,7 +89,7 @@ The divergences above are explainable, not random - and the board got several th
 
 ## Ablation studies
 
-Three variants were run against the baseline to test the sensitivity of outcomes to board composition and agent configuration.
+Two variants were run against the baseline to test the sensitivity of outcomes to board composition and agent configuration.
 
 ### Run 1 - Conservative CFO
 
@@ -126,7 +142,7 @@ $8,235M, a negligible improvement given a $25.3B gap with actual. Revenue overes
 actually worsened, with Q4 reaching +$7,026M vs the baseline's +$8,500M, slightly better 
 but still compounding hot. The conservative CFO successfully moderated headcount growth 
 but could not address the structural cash gap, confirming that the limitation lies in the 
-ActionLibrary's absence of financing decisions rather than agent behavior.
+`ActionLibrary`'s absence of financing decisions rather than agent behavior.
 
 ### Run 2 - Personality swap (CFO and CTO)
 
@@ -178,9 +194,6 @@ with the headcount reduction. The board never explicitly "knew" it was overspend
 simply responded to the deteriorating state it had created, producing a correction without 
 any external intervention.
 
-### Run 3 - Limit board to just three AIEs (CEO, CTO, CFO)
-
-* results otw *
 
 ## How it works
 
@@ -364,15 +377,9 @@ CompanyState = {
 
 **PPTX files** (earnings slides, outlook) for this company are fully image-based and yield no extractable text. Prompt C runs on the transcript, press release, and product list instead.
 
-**Revenue is not projected forward.** Prompt B applies actions to operating variables (R&D, headcount, capex, margins) but does not produce a revenue forecast - revenue is a lagging result of decisions made over multiple quarters. The comparison treats each quarter's simulated financials as the direct output of that quarter's approved actions. Note - the simulation is designed to compare strategic decision-making behavior e.g., what actions the board chose, how they allocated investment. This is not to be viewed as a financial forecasting model.
+**Revenue is not projected forward.** Prompt B applies actions to operating variables (R&D, headcount, capex, margins) but does not produce a revenue forecast, revenue is a lagging result of decisions made over multiple quarters. The comparison treats each quarter's simulated financials as the direct output of that quarter's approved actions. Note -- the simulation is designed to compare strategic decision-making behavior e.g., what actions the board chose, how they allocated investment. This is not to be viewed as a financial forecasting model.
+**Prompt B transient failures** occasionally return the input state unchanged rather than producing an updated state. Affected quarters show identical start and end values. Re-running the affected quarter resolves this in most cases.
 
 **`total_employees`** is not available in quarterly earnings files and must be initially set manually in `config.py`. Simulated headcount compounds forward from each quarter's end state across the four-quarter run.
-
-
-## Research questions
-
-1. Does an AI-simulated C-suite produce decisions measurably different from its human-led counterpart?
-2. Do those decisions lead to better, worse, or statistically indistinguishable simulated outcomes?
-3. *(Optional)* Does multi-agent executive communication improve decision quality?
 
 *Submitted to SIGBOVIK 2026.*
