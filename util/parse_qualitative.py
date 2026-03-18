@@ -17,7 +17,7 @@ FY22Q4/                         (no Performance PDF available)
 FY2023/Qn/FY23Qn-zip/
   FinancialStatementFY23Q1.xlsx → handled by parse_financials.py
   Metrics_FY23Q1.xlsx           → not used (investor metrics, not qualitative)
-  MSFT_FY23Q1_10Q.docx          → not used (SEC filing, too long/legal)
+  COMPANY_FY23Q1_10Q.docx          → not used (SEC filing, too long/legal)
   TranscriptFY23Q1.docx         → "transcript"
   SlidesFY23Q1.pptx             → "earnings_slides"
   OutlookFY23Q1.pptx            → "outlook_slides"
