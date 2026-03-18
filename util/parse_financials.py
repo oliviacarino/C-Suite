@@ -1,7 +1,7 @@
 """
 util/parse_financials.py
 
-Parses a Microsoft quarterly financial statements XLSX and returns a flat dict
+Parses a quarterly financial statements XLSX and returns a flat dict
 of all CompanyState Financials + Segments fields (USD millions, floats).
 
 ── Confirmed file structure (from FinancialStatementFY23Q1.xlsx inspection) ──
@@ -64,7 +64,7 @@ def _find_value(sheet, label_pattern: str, value_col_index: int = 1) -> float:
 
 def parse_financials(path: Path) -> dict:
     """
-    Parse a Microsoft quarterly financial statements XLSX.
+    Parse a quarterly financial statements XLSX.
     Returns a flat dict of CompanyState Financials + Segments fields.
     All monetary values are USD millions (floats).
     """

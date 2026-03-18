@@ -28,7 +28,7 @@ FY2023/Qn/FY23Qn-zip/
   FY23 Q1 - Press Releases...pdf    → not used (redundant with PressRelease.docx)
 
 FY2023/Qn/  (one level up from zip folder)
-  FY23 Q1 - Performance - Investor Relations - Microsoft.pdf → "performance"
+  FY23 Q1 - Performance - Investor Relations - <company>.pdf → "performance"
 
 ── File matching ──────────────────────────────────────────────────────────────
 load_qualitative_docs() uses case-insensitive substring matching on filenames.
@@ -62,7 +62,7 @@ def parse_pptx(path: Path) -> str:
     Extract all text frame content from a .pptx file.
     Each slide is prefixed with [Slide N] for orientation.
 
-    Note: some Microsoft earnings PPTX files (e.g. SlidesFY23Q1.pptx,
+    Note: some earnings PPTX files (e.g. SlidesFY23Q1.pptx,
     OutlookFY23Q1.pptx) are entirely image-based — every shape is a
     PICTURE with no embedded text. parse_pptx() returns None for these
     so Prompt C simply skips them rather than receiving an empty string.
