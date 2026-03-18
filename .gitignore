@@ -4,4 +4,8 @@ config.py
 .venv/
 __pycache__
 __init__.py
-results/
+results/baseline
+results/conservative_CFO
+results/CTO_CFO_Swap
+results/test_data
+results/three_member_board
