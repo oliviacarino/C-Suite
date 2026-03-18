@@ -61,10 +61,10 @@ Ten AIEs map to real C-suite titles: CEO, CFO, COO, CPO, CTO, CMO, CCO, VP&Chair
 ### Scoring math
 
 **AES (individual):**
-![](./images/AES_score.png)
+<img src="./images/AES_score.png" width="400"/>
 
-Where `i`  is the index of the current state vector,
-`w_agent,i` is the role-priority weight for state variable `i`(field within the current `CompanyState`, range −4 to +4), and `Effect_i(a)` is the Claude-predicted directional impact of action `a` on variable ii i (e.g., −2, 0, +3).
+Where `i` is the index of the current state vector,
+`w_agent,i` is the role-priority weight for state variable `i` (field within the current `CompanyState`, range −4 to +4), and `Effect_i(a)` is the Claude-predicted directional impact of action `a` on variable `i` (e.g., −2, 0, +3).
 
 **Vote direction:**
 ```
@@ -75,10 +75,10 @@ vote = +1 if AES > 0,  −1 if AES < 0,  0 if AES = 0
 ```
 VoteWeight = VoteDirection × (1 + DomainBonus)
 ```
-Domain bonus = 2 if the action falls in the agent's primary domain, else 0. 
+Domain bonus = 2 if the action falls in the agent's primary domain, else 0.
 
 **Final decision:**
-![](./images/Final_Decision_Score.png)
+<img src="./images/Final_Decision_Score.png" width="400"/>
 
 ---
 
@@ -231,7 +231,7 @@ CompanyState = {
 
 **PPTX files** (earnings slides, outlook) for this company are fully image-based and yield no extractable text. Prompt C runs on the transcript, press release, and product list instead.
 
-**Revenue is not projected forward.** Prompt B applies actions to operating variables (R&D, headcount, capex, margins) but does not produce a revenue forecast — revenue is a lagging result of decisions made over multiple quarters. The comparison treats each quarter's simulated financials as the direct output of that quarter's approved actions.
+**Revenue is not projected forward.** Prompt B applies actions to operating variables (R&D, headcount, capex, margins) but does not produce a revenue forecast — revenue is a lagging result of decisions made over multiple quarters. The comparison treats each quarter's simulated financials as the direct output of that quarter's approved actions. Note -- the simulation is designed to compare strategic decision-making behavior e.g., what actions the board chose, how they allocated investment. This is not to be viewed as a financial forecasting model. 
 
 **`total_employees`** is not available in quarterly earnings files and must be initially set manually in `config.py`. Simulated headcount compounds forward from each quarter's end state across the four-quarter run.
 
