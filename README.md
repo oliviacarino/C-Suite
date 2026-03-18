@@ -61,6 +61,7 @@ Ten AIEs map to real C-suite titles: CEO, CFO, COO, CPO, CTO, CMO, CCO, VP&Chair
 ### Scoring math
 
 **AES (individual):**
+
 <img src="./images/AES_score.png" width="400"/>
 
 Where `i` is the index of the current state vector,
@@ -78,6 +79,7 @@ VoteWeight = VoteDirection × (1 + DomainBonus)
 Domain bonus = 2 if the action falls in the agent's primary domain, else 0.
 
 **Final decision:**
+
 <img src="./images/Final_Decision_Score.png" width="400"/>
 
 ---
