@@ -11,37 +11,65 @@ Note that this is a very, *very* satirical take on the latest trend in tech: job
 
 ## Results
 
-Each quarter's AIE board received the real financial state and external market context (*qualitative data pulled from real documentation, then fed to Claude*) and made independent *strategic* decisions.
+The simulation seeds from real FY22Q4 financial data. Each subsequent quarter uses only the previous quarter's simulated end state — no real FY2023 data is used during the simulation. The AIE board operates entirely on its own compounding decisions after the seed.
+
+Each quarter's AIE board received the simulated financial state and external market context (*qualitative signals derived from real FY22Q4 documentation, then fed to Claude*) and made independent strategic decisions.
 
 ### Comparison: simulated vs actual
 
-| Quarter | Revenue Sim | Revenue Actual | Delta | Op. Margin Sim | Op. Margin Actual | Delta |
-|---------|------------|---------------|-------|---------------|------------------|-------|
-| FY23Q1  | $52,628M   | $52,747M      | −$119M | 42.9% | 38.7% | +4.3% |
-| FY23Q2  | $54,684M   | $52,857M      | +$1,827M | 36.8% | 42.3% | −5.5% |
-| FY23Q3  | $55,200M   | $56,189M      | −$989M | 43.2% | 43.2% | 0.0% |
-| FY23Q4  | $58,996M   | $56,189M      | +$2,807M | 42.5% | 43.2% | −0.7% |
+| Quarter | Revenue Sim | Revenue Actual | Delta |
+|---------|------------|---------------|-------|
+| FY23Q1  | $53,458M   | $52,747M      | +$711M |
+| FY23Q2  | $55,531M   | $52,857M      | +$2,674M |
+| FY23Q3  | $58,808M   | $56,189M      | +$2,619M |
+| FY23Q4  | $64,688M   | $56,189M      | +$8,500M |
 
-| Quarter | Cash Sim   | Cash Actual | Delta      | Headcount Sim | Headcount Actual | Delta |
-|---------|-----------|------------|------------|--------------|-----------------|-------|
-| FY23Q1  | $20,356M  | $15,646M   | +$4,710M   | 221,000 | 221,000 | 0 |
-| FY23Q2  | $13,146M  | $26,562M   | −$13,416M  | 223,450 | 221,000 | +2,450 |
-| FY23Q3  | $25,200M  | $34,704M   | −$9,504M   | 225,500 | 228,000 | −2,500 |
-| FY23Q4  | $32,959M  | $34,704M   | −$1,745M   | 242,800 | 238,000 | +4,800 |
+| Quarter | Op. Margin Sim | Op. Margin Actual | Delta |
+|---------|---------------|------------------|-------|
+| FY23Q1  | 39.6%         | 38.7%            | +1.0% |
+| FY23Q2  | 39.7%         | 42.3%            | −2.6% |
+| FY23Q3  | 37.3%         | 43.2%            | −5.8% |
+| FY23Q4  | 34.5%         | 43.2%            | −8.7% |
 
-### Key findings
+| Quarter | Cash Sim  | Cash Actual | Delta |
+|---------|----------|------------|-------|
+| FY23Q1  | $12,431M | $15,646M   | −$3,215M |
+| FY23Q2  | $11,431M | $26,562M   | −$15,131M |
+| FY23Q3  | $9,876M  | $34,704M   | −$24,828M |
+| FY23Q4  | $8,235M  | $34,704M   | −$26,469M |
 
-**Revenue — close alignment.** The AIE board tracked actual revenue within 0.2% in Q1 and within 5% across all four quarters. The trajectory was correct, both lines trend upward through the year, though the simulation ran slightly hot in Q2 and Q4.
+| Quarter | Headcount Sim | Headcount Actual | Delta |
+|---------|--------------|-----------------|-------|
+| FY23Q1  | 232,050      | 221,000         | +11,050 |
+| FY23Q2  | 235,971      | 221,000         | +14,971 |
+| FY23Q3  | 251,469      | 228,000         | +23,469 |
+| FY23Q4  | 264,343      | 238,000         | +26,343 |
 
-**Operating margin — diverged early, converged late.** Q1 the simulation was more profitable than reality (+4.3%), likely because the board's approved actions leaned toward revenue expansion rather than the heavy infrastructure spending the actual company realistically  made. Q3 margin matched exactly (0.0% delta), and Q4 was within 0.7%.
+<!-- <img src="./results/charts/comparison_charts.png" width="900"/> -->
 
-**Cash — largest divergence.** The simulation consistently underestimated cash reserves, most significantly in Q2 (−$13.4B). This reflects a known limitation: the ActionLibrary doesn't model financing decisions (share buybacks, debt management, dividend payments) that the actual company actively used to manage its cash position. Cash is the weakest metric in this simulation design.
+### Key Findings
 
-**Headcount — strongest result.** The simulation matched actual headcount exactly in Q1, stayed within 2,500 employees (≈1%) across all quarters, and correctly captured the growth trajectory through the year.
+**Revenue — consistently overestimated, correct trajectory.** The AIE board tracked revenue direction correctly, both simulated and actual lines trend upward through the year. However the simulation ran progressively hot, with the Q4 delta reaching +$8.5B (+15%). The board's growth-oriented action mix (enterprise sales expansion, AI initiatives, cloud investment) compounded into increasingly optimistic revenue projections as the simulated state drifted further from reality each quarter.
 
-**Strategic direction.** Across all four quarters, the AIE board consistently proposed and approved AI-investment-oriented actions — `launch_major_ai_initiative`, `expand_cloud_investment`, `increase_rd_10`, `increase_capex_datacenters`, which aligns with what the actual company prioritized during its FY2023 [major product] push. The external context injection (the 2023 Gartner Hype Cycle, ChatGPT's birth in Nov. 2022) appears to have driven the board toward the correct strategic posture.
+**Operating margin — diverged significantly by year-end.** Q1 margin was close (+1.0%), but the gap widened steadily through the year, reaching −8.7% by Q4. The AI board prioritized growth actions (R&D, hiring, capex) over cost discipline, which is directionally what the real company did, but the simulation didn't capture the operational efficiencies the actual company achieved alongside its investments. By Q4 the simulated company was spending aggressively without the margin management the real executives applied.
 
----
+**Cash — largest and most consistent divergence.** The simulation depleted cash steadily across all four quarters, ending Q4 with only $8.2B vs the actual $34.7B — a $26.5B gap. This is the expected consequence of a known design limitation: the ActionLibrary does not model financing decisions (share buybacks, debt issuance, dividend management) that the actual company  actively used to maintain its cash position. The AI board spent heavily on approved actions without any offsetting capital management.
+
+**Headcount — overestimated and compounding.** The simulation consistently hired more aggressively than the real company, with the gap growing from +11K in Q1 to +26K by Q4. This reflects the board's tendency to approve both `increase_engineering_hiring` and growth-oriented actions simultaneously each quarter, with headcount compounding forward. The real company was more measured in its hiring pace.
+
+**Strategic direction — correct posture, excessive intensity.** Across all four quarters, the AIE board consistently approved AI-investment-oriented actions, `launch_major_ai_initiative`, `expand_cloud_investment`, `increase_rd_10`, `increase_capex_datacenters`, which aligns with what the actual company prioritized during its FY2023 push. The board identified the right strategic direction. The divergence comes from the simulation lacking the financial discipline mechanisms (cost controls, margin management, capital allocation) that real executives apply alongside growth investments.
+
+### The Optimistic Read
+
+The divergences above are explainable, not random, and the board got several things right.
+
+**Strategic direction was correct.** The AIE board independently converged on AI-heavy, cloud-forward investment every quarter without access to any real FY2023 data. That alignment with what the actual company prioritized is the strongest result in the simulation.
+
+**Revenue trajectory was right.** The simulated company grew revenue every quarter in the correct direction. It overshot, but it didn't collapse or make catastrophically wrong calls.
+
+**Q1 margin was nearly identical.** A +1.0% delta in Q1 is essentially noise, the board was well-calibrated before compounding took hold.
+
+**The divergences reveal something interesting.** Cash depletion and margin compression aren't signs of bad strategy, they're signs of a board with no mechanism to balance investment velocity with financial discipline. The real CFO applied guardrails the simulation couldn't model. The AI board behaved like an unconstrained growth-stage company: it found the right direction but had no accountability structures to say no. Real executives aren't necessarily smarter about strategy, they're better at restraint.
 
 ## How it works
 
@@ -81,8 +109,6 @@ Domain bonus = 2 if the action falls in the agent's primary domain, else 0.
 **Final decision:**
 
 <img src="./images/Final_Decision_Score.png" width="400"/>
-
----
 
 ## Project structure
 
@@ -139,8 +165,6 @@ csuite/
         └── comparison_charts.png
 ```
 
----
-
 ## Setup
 
 ```bash
@@ -150,8 +174,6 @@ pip install -r requirements.txt
 ```
 
 Create `.env` in the project root with your `ANTHROPIC_API_KEY`
-
----
 
 ## Running
 
@@ -166,17 +188,17 @@ python test/test_parse.py FY22Q4       # single quarter
 python test/test_voting.py
 ```
 
-### 3. Parse all quarters to `CompanyState` state vectors  saved as JSON 
+### 3. Parse FY22Q4 seed state
 ```bash
 python main.py --dry-run    # parse only, skip Prompt C
 python main.py              # full parse including Prompt C API calls
 ```
-Outputs one `data/processed/<QUARTER>_company_state.json` per quarter.
+Only FY22Q4 is required as the simulation seed. Outputs `data/processed/FY22Q4_company_state.json`.
 
 ### 4. Run the simulation
 ```bash
-python main.py --simulate --quarter FY23Q1   # single quarter
 python main.py --simulate                     # full FY2023 (all 4 quarters)
+python main.py --simulate --quarter FY23Q1    # single quarter (uses real parsed data)
 ```
 Outputs one `results/<QUARTER>_simulation_log.json` per quarter.
 
@@ -186,21 +208,21 @@ python util/compare.py           # prints table + displays charts
 python util/compare.py --save    # saves charts to results/charts/
 ```
 
----
-
 ## CompanyState vector
+
 - **DIRECT** — parsed directly from the company's financial XLS files (income statement, balance sheet, cash flow, segment revenue). These are exact figures from the real earnings data.
 - **CLAUDE-DERIVED** — extracted by Prompt C from qualitative documents (earnings transcript, press release, product release list) and quantified on a 1–10 scale.
 - **MIXED** — some fields in the section come from direct data, others are Claude-derived. See inline comments for which is which.
+
 ```python
 CompanyState = {
-    "Financials": {          # DIRECT 
+    "Financials": {          # DIRECT
         "revenue", "cost_of_revenue", "gross_margin",
         "operating_income", "net_income", "cash_and_equivalents",
         "total_operating_expenses", "rd_spending",
         "sales_marketing_spending", "capex"
     },
-    "Segments": {            # DIRECT 
+    "Segments": {            # DIRECT
         "productivity_revenue",
         "intelligent_cloud_revenue",
         "personal_computing_revenue"
@@ -219,13 +241,9 @@ CompanyState = {
 }
 ```
 
----
-
 ## Action library
 
 30 actions across 8 categories: R&D Investment, Innovation Index, Revenue, Brand Strength, Headcount, Operating Cost, Cash Reserves, and Multi-category / Governance. Each AIE proposes up to 3 actions per quarter from this fixed list. The top 5 determined by the `FinalDecisionScore` are implemented each quarter.
-
----
 
 ## Known limitations
 
@@ -233,11 +251,9 @@ CompanyState = {
 
 **PPTX files** (earnings slides, outlook) for this company are fully image-based and yield no extractable text. Prompt C runs on the transcript, press release, and product list instead.
 
-**Revenue is not projected forward.** Prompt B applies actions to operating variables (R&D, headcount, capex, margins) but does not produce a revenue forecast — revenue is a lagging result of decisions made over multiple quarters. The comparison treats each quarter's simulated financials as the direct output of that quarter's approved actions. Note -- the simulation is designed to compare strategic decision-making behavior e.g., what actions the board chose, how they allocated investment. This is not to be viewed as a financial forecasting model. 
+**Revenue is not projected forward.** Prompt B applies actions to operating variables (R&D, headcount, capex, margins) but does not produce a revenue forecast — revenue is a lagging result of decisions made over multiple quarters. The comparison treats each quarter's simulated financials as the direct output of that quarter's approved actions. Note — the simulation is designed to compare strategic decision-making behavior e.g., what actions the board chose, how they allocated investment. This is not to be viewed as a financial forecasting model.
 
 **`total_employees`** is not available in quarterly earnings files and must be initially set manually in `config.py`. Simulated headcount compounds forward from each quarter's end state across the four-quarter run.
-
----
 
 ## Research questions
 
