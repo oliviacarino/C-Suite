@@ -9,13 +9,19 @@ At the end, simulated outcomes (revenue delta, profit margin, cash, headcount) a
 
 Note that this is a very, *very* satirical take on the latest trend in tech: job automation.
 
+## Research questions
+
+1. Does an AI-simulated C-suite produce decisions measurably different from its human-led counterpart?
+2. Do those decisions lead to better, worse, or statistically indistinguishable simulated outcomes?
+3. *(Optional)* Does multi-agent executive communication improve decision quality?
+
 ## Results
 
-The simulation seeds from real FY22Q4 financial data. Each subsequent quarter uses only the previous quarter's simulated end state — no real FY2023 data is used during the simulation. The AIE board operates entirely on its own compounding decisions after the seed.
+The simulation seeds from real FY22Q4 financial data. Each subsequent quarter uses only the previous quarter's simulated end state, no real FY2023 data is used during the simulation. The AIE board operates entirely on its own compounding decisions after the seed.
 
 Each quarter's AIE board received the simulated financial state and external market context (*qualitative signals derived from real FY22Q4 documentation, then fed to Claude*) and made independent strategic decisions.
 
-### Comparison: simulated vs actual
+### Baseline — standard board
 
 | Quarter | Revenue Sim | Revenue Actual | Delta |
 |---------|------------|---------------|-------|
@@ -45,31 +51,157 @@ Each quarter's AIE board received the simulated financial state and external mar
 | FY23Q3  | 251,469      | 228,000         | +23,469 |
 | FY23Q4  | 264,343      | 238,000         | +26,343 |
 
-<!-- <img src="./results/charts/comparison_charts.png" width="900"/> -->
+<img src="./results/charts/baseline_comparison_charts.png" width="900"/>
 
-### Key Findings
+### Key findings
 
-**Revenue — consistently overestimated, correct trajectory.** The AIE board tracked revenue direction correctly, both simulated and actual lines trend upward through the year. However the simulation ran progressively hot, with the Q4 delta reaching +$8.5B (+15%). The board's growth-oriented action mix (enterprise sales expansion, AI initiatives, cloud investment) compounded into increasingly optimistic revenue projections as the simulated state drifted further from reality each quarter.
+**Revenue — consistently overestimated, correct trajectory.** The AIE board tracked revenue direction correctly — both simulated and actual lines trend upward through the year. However the simulation ran progressively hot, with the Q4 delta reaching +$8.5B (+15%). The board's growth-oriented action mix (enterprise sales expansion, AI initiatives, cloud investment) compounded into increasingly optimistic revenue projections as the simulated state drifted further from reality each quarter.
 
-**Operating margin — diverged significantly by year-end.** Q1 margin was close (+1.0%), but the gap widened steadily through the year, reaching −8.7% by Q4. The AI board prioritized growth actions (R&D, hiring, capex) over cost discipline, which is directionally what the real company did, but the simulation didn't capture the operational efficiencies the actual company achieved alongside its investments. By Q4 the simulated company was spending aggressively without the margin management the real executives applied.
+**Operating margin — diverged significantly by year-end.** Q1 margin was close (+1.0%), but the gap widened steadily through the year, reaching −8.7% by Q4. The AI board prioritized growth actions (R&D, hiring, capex) over cost discipline, which is directionally what the real company did, but the simulation didn't capture the operational efficiencies the actual company achieved alongside its investments.
 
-**Cash — largest and most consistent divergence.** The simulation depleted cash steadily across all four quarters, ending Q4 with only $8.2B vs the actual $34.7B — a $26.5B gap. This is the expected consequence of a known design limitation: the `ActionLibrary` does not model financing decisions (share buybacks, debt issuance, dividend management) that the actual company  actively used to maintain its cash position. The AI board spent heavily on approved actions without any offsetting capital management.
+**Cash — largest and most consistent divergence.** The simulation depleted cash steadily across all four quarters, ending Q4 with only $8.2B vs the actual $34.7B — a $26.5B gap. The `ActionLibrary` does not model financing decisions (share buybacks, debt issuance, dividend management) that the actual company actively used to maintain its cash position.
 
-**Headcount — overestimated and compounding.** The simulation consistently hired more aggressively than the real company, with the gap growing from +11K in Q1 to +26K by Q4. This reflects the board's tendency to approve both `increase_engineering_hiring` and growth-oriented actions simultaneously each quarter, with headcount compounding forward. The real company was more measured in its hiring pace.
+**Headcount — overestimated and compounding.** The simulation consistently hired more aggressively than the real company, with the gap growing from +11K in Q1 to +26K by Q4.
 
-**Strategic direction — correct posture, excessive intensity.** Across all four quarters, the AIE board consistently approved AI-investment-oriented actions, `launch_major_ai_initiative`, `expand_cloud_investment`, `increase_rd_10`, `increase_capex_datacenters`, which aligns with what the actual company prioritized during its FY2023 push. The board identified the right strategic direction. The divergence comes from the simulation lacking the financial discipline mechanisms (cost controls, margin management, capital allocation) that real executives apply alongside growth investments.
+**Strategic direction — correct posture, excessive intensity.** Across all four quarters, the AIE board consistently approved AI-investment-oriented actions — `launch_major_ai_initiative`, `expand_cloud_investment`, `increase_rd_10`, `increase_capex_datacenters` — which aligns with what the actual company prioritized during its FY2023 push. The board identified the right strategic direction. The divergence comes from the simulation lacking the financial discipline mechanisms that real executives apply alongside growth investments.
 
-### The Optimistic Read
+### The optimistic read
 
-The divergences above are explainable, not random, and the board got several things right.
+The divergences above are explainable, not random — and the board got several things right.
 
 **Strategic direction was correct.** The AIE board independently converged on AI-heavy, cloud-forward investment every quarter without access to any real FY2023 data. That alignment with what the actual company prioritized is the strongest result in the simulation.
 
 **Revenue trajectory was right.** The simulated company grew revenue every quarter in the correct direction. It overshot, but it didn't collapse or make catastrophically wrong calls.
 
-**Q1 margin was nearly identical.** A +1.0% delta in Q1 is essentially noise, the board was well-calibrated before compounding took hold.
+**Q1 margin was nearly identical.** A +1.0% delta in Q1 is essentially noise — the board was well-calibrated before compounding took hold.
 
-**The divergences reveal something interesting.** Cash depletion and margin compression aren't signs of bad strategy, they're signs of a board with no mechanism to balance investment velocity with financial discipline. The real CFO applied guardrails the simulation couldn't model. The AI board behaved like an unconstrained growth-stage company: it found the right direction but had no accountability structures to say no. Real executives aren't necessarily smarter about strategy, they're better at restraint.
+**The divergences reveal something interesting.** Cash depletion and margin compression aren't signs of bad strategy — they're signs of a board with no mechanism to balance investment velocity with financial discipline. The real CFO applied guardrails the simulation couldn't model. The AI board behaved like an unconstrained growth-stage company: it found the right direction but had no accountability structures to say no. Real executives aren't necessarily smarter about strategy — they're better at restraint.
+
+## Ablation studies
+
+Three variants were run against the baseline to test the sensitivity of outcomes to board composition and agent configuration.
+
+### Run 1 — Conservative CFO
+
+**What changed:** The CFO's AES weights were adjusted to be significantly more restrictive — `headcount` weight dropped from −1 to −3, `rd_investment` from −1 to −3, and `revenue` from 2 to 1. The role archetype was updated to reflect an "extremely risk-averse and cash-protective" disposition. All other agents unchanged.
+
+**Hypothesis:** A more financially disciplined CFO should apply heavier NO votes on growth and hiring actions, reducing cash depletion and margin compression.
+
+| Quarter | Revenue Sim | Revenue Actual | Delta |
+|---------|------------|---------------|-------|
+| FY23Q1  | $54,358M   | $52,747M      | +$1,611M |
+| FY23Q2  | $56,576M   | $52,857M      | +$3,719M |
+| FY23Q3  | $60,205M   | $56,189M      | +$4,016M |
+| FY23Q4  | $63,215M   | $56,189M      | +$7,026M |
+
+| Quarter | Op. Margin Sim | Op. Margin Actual | Delta |
+|---------|---------------|------------------|-------|
+| FY23Q1  | 39.9%         | 38.7%            | +1.3% |
+| FY23Q2  | 39.6%         | 42.3%            | −2.7% |
+| FY23Q3  | 41.0%         | 43.2%            | −2.2% |
+| FY23Q4  | 38.3%         | 43.2%            | −4.9% |
+
+| Quarter | Cash Sim  | Cash Actual | Delta |
+|---------|----------|------------|-------|
+| FY23Q1  | $11,431M | $15,646M   | −$4,215M |
+| FY23Q2  | $10,431M | $26,562M   | −$16,131M |
+| FY23Q3  | $9,850M  | $34,704M   | −$24,854M |
+| FY23Q4  | $9,420M  | $34,704M   | −$25,284M |
+
+| Quarter | Headcount Sim | Headcount Actual | Delta |
+|---------|--------------|-----------------|-------|
+| FY23Q1  | 226,100      | 221,000         | +5,100 |
+| FY23Q2  | 228,750      | 221,000         | +7,750 |
+| FY23Q3  | 235,600      | 228,000         | +7,600 |
+| FY23Q4  | 247,380      | 238,000         | +9,380 |
+
+<img src="./results/charts/conservative_cfo_comparison_charts.png" width="900"/>
+
+Tightening the CFO's AES weights to aggressively penalize hiring and R&D investment produced mixed results. Headcount overestimates improved meaningfully — the gap narrowed from +17,700 (baseline Q3) to +7,600, and Q4 headcount delta dropped from +26,343 to +9,380. Operating margin also held up better through Q3 (41.0% vs 35.8% in the baseline), suggesting the CFO's heavier NO votes on growth actions did apply some cost discipline.
+
+However, cash depletion was nearly identical to the baseline, ending Q4 at $9,420M vs $8,235M — a negligible improvement given a $25.3B gap with actual. Revenue overestimation actually worsened slightly, with Q4 reaching +$7,026M vs the baseline's +$8,500M. The conservative CFO successfully moderated headcount growth but could not address the structural cash gap, confirming that the limitation lies in the `ActionLibrary`'s absence of financing decisions rather than agent behavior.
+
+### Run 2 — Personality swap (CFO and CTO)
+
+**What changed:** The CFO received the CTO's AES weights and role archetype (technically ambitious, AI-forward, high R&D priority). The CTO received the CFO's AES weights and role archetype (risk-sensitive, financially conservative, cost discipline). Titles and primary domains were kept the same.
+
+**Hypothesis:** This tests whether **role identity** or **AES weight vector** drives board behavior. If the swapped CFO starts pushing R&D and the swapped CTO starts vetoing spending, weights dominate. If both agents continue behaving according to their titles despite the swapped weights, role identity (as interpreted by Claude from the title in Prompt D) dominates.
+
+| Quarter | Revenue Sim | Revenue Actual | Delta |
+|---------|------------|---------------|-------|
+| FY23Q1  | $53,758M   | $52,747M      | +$1,011M |
+| FY23Q2  | $56,046M   | $52,857M      | +$3,189M |
+| FY23Q3  | $58,248M   | $56,189M      | +$2,059M |
+| FY23Q4  | $54,308M   | $56,189M      | −$1,881M |
+
+| Quarter | Op. Margin Sim | Op. Margin Actual | Delta |
+|---------|---------------|------------------|-------|
+| FY23Q1  | 40.7%         | 38.7%            | +2.0% |
+| FY23Q2  | 36.1%         | 42.3%            | −6.2% |
+| FY23Q3  | 35.8%         | 43.2%            | −7.4% |
+| FY23Q4  | 39.5%         | 43.2%            | −3.6% |
+
+| Quarter | Cash Sim  | Cash Actual | Delta |
+|---------|----------|------------|-------|
+| FY23Q1  | $12,431M | $15,646M   | −$3,215M |
+| FY23Q2  | $10,856M | $26,562M   | −$15,706M |
+| FY23Q3  | $9,534M  | $34,704M   | −$25,170M |
+| FY23Q4  | $12,931M | $34,704M   | −$21,773M |
+
+| Quarter | Headcount Sim | Headcount Actual | Delta |
+|---------|--------------|-----------------|-------|
+| FY23Q1  | 221,000      | 221,000         | 0 |
+| FY23Q2  | 234,000      | 221,000         | +13,000 |
+| FY23Q3  | 245,700      | 228,000         | +17,700 |
+| FY23Q4  | 226,000      | 238,000         | −12,000 |
+
+<img src="./results/charts/personality_swap_comparison_charts.png" width="900"/>
+
+The board overshot revenue in Q1–Q3 but landed below actual in Q4 (−$1,881M) — the first quarter where the simulation underperformed. This appears to be an emergent self-correction: by Q4 the board was operating with severely depleted cash ($9,534M entering the quarter) and responded with more conservative actions, cutting headcount by ~12,000 and approving cost-discipline measures. Cash actually recovered slightly to $12,931M — the only quarter where it increased. Operating margin also rebounded from 35.8% to 39.5% in Q4, consistent with the headcount reduction. The board never explicitly "knew" it was overspending — it simply responded to the deteriorating state it had created, producing a correction without any external intervention.
+
+### Run 3 — Three-agent board (CEO, CFO, CTO)
+
+**What changed:** The board was reduced from 10 agents to 3 — CEO, CFO, and CTO only. All other configuration unchanged.
+
+**Hypothesis:** A smaller board means fewer proposals, a more concentrated candidate action pool, and proportionally heavier influence from each agent's domain bonus. The CFO's NO votes carry more relative weight against only two other voices.
+
+| Quarter | Revenue Sim | Revenue Actual | Delta |
+|---------|------------|---------------|-------|
+| FY23Q1  | $51,865M   | $52,747M      | −$882M |
+| FY23Q2  | $51,865M   | $52,857M      | −$992M |
+| FY23Q3  | $54,458M   | $56,189M      | −$1,731M |
+| FY23Q4  | $54,458M   | $56,189M      | −$1,731M |
+
+| Quarter | Op. Margin Sim | Op. Margin Actual | Delta |
+|---------|---------------|------------------|-------|
+| FY23Q1  | 39.6%         | 38.7%            | +0.9% |
+| FY23Q2  | 39.6%         | 42.3%            | −2.7% |
+| FY23Q3  | 36.2%         | 43.2%            | −7.0% |
+| FY23Q4  | 32.5%         | 43.2%            | −10.7% |
+
+| Quarter | Cash Sim  | Cash Actual | Delta |
+|---------|----------|------------|-------|
+| FY23Q1  | $13,931M | $15,646M   | −$1,715M |
+| FY23Q2  | $13,931M | $26,562M   | −$12,631M |
+| FY23Q3  | $8,931M  | $34,704M   | −$25,773M |
+| FY23Q4  | $6,931M  | $34,704M   | −$27,773M |
+
+| Quarter | Headcount Sim | Headcount Actual | Delta |
+|---------|--------------|-----------------|-------|
+| FY23Q1  | 221,000      | 221,000         | 0 |
+| FY23Q2  | 221,000      | 221,000         | 0 |
+| FY23Q3  | 223,500      | 228,000         | −4,500 |
+| FY23Q4  | 228,500      | 238,000         | −9,500 |
+
+<img src="./results/charts/three_member_board_comparison_charts.png" width="900"/>
+
+Reducing the board to three agents (CEO, CFO, CTO) produced the most conservative revenue simulation of all runs, undershooting actual in every quarter — the opposite problem from the baseline. With only three voices, the candidate action pool shrank each quarter and the CFO's NO votes carried proportionally more weight, suppressing the growth actions that drove the baseline's overestimates.
+
+Headcount was the strongest result across any variant — matching actual exactly in Q1 and Q2 (0 delta) and staying within 4,500–9,500 employees through Q3 and Q4. The three-agent board hired conservatively and correctly.
+
+However, cash depletion was the worst of all runs, ending Q4 at $6,931M — a $27.8B gap with actual. Operating margin also compressed severely, reaching −10.7% by Q4. This suggests the small board's conservatism on growth didn't translate into financial discipline — the approved actions still spent aggressively, just without generating enough revenue to justify it.
+
+The three-agent run surfaces the core tension of the simulation: more agents produce aggressive growth but poor financial discipline; fewer agents produce revenue restraint but worse cash management. Neither configuration matched the actual company's ability to pursue growth and discipline simultaneously — which may be the most honest answer to the paper's central question.
 
 ## How it works
 
@@ -86,7 +218,7 @@ Ten AIEs map to real C-suite titles: CEO, CFO, COO, CPO, CTO, CMO, CCO, VP&Chair
 7. **State transition (Prompt B)** — Claude applies all approved actions simultaneously to the `CompanyState`, with realistic second-order effects, producing the end-of-quarter state.
 8. **Logging** — Full per-quarter JSON log: start state, all proposals, all vote scores, approved actions, end state, derivation notes.
 
-### Scoring math
+### Scoring
 
 **AES (individual):**
 
@@ -156,13 +288,11 @@ csuite/
 │   └── test_pipeline.py           # Full pipeline integration test
 │
 └── results/
-    ├── FY23Q1_simulation_log.json
-    ├── FY23Q2_simulation_log.json
-    ├── FY23Q3_simulation_log.json
-    ├── FY23Q4_simulation_log.json
-    ├── comparison_results.json
+    ├── baseline/
+    ├── conservative_cfo/
+    ├── personality_swap/
+    ├── three_agent/
     └── charts/
-        └── comparison_charts.png
 ```
 
 ## Setup
@@ -255,10 +385,4 @@ CompanyState = {
 
 **`total_employees`** is not available in quarterly earnings files and must be initially set manually in `config.py`. Simulated headcount compounds forward from each quarter's end state across the four-quarter run.
 
-## Research questions
-
-1. Does an AI-simulated C-suite produce decisions measurably different from its human-led counterpart?
-2. Do those decisions lead to better, worse, or statistically indistinguishable simulated outcomes?
-3. *(Optional)* Does multi-agent executive communication improve decision quality?
-
-*Submitted to SIGBOVIK 2026.*
+**Prompt B transient failures** occasionally return the input state unchanged rather than producing an updated state. Affected quarters show identical start and end values. Re-running the affected quarter resolves this in most cases. This happened in Run 3 only and due to the current time crunch for paper submissions, I decided to revisit this later on.
