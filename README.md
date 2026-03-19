@@ -31,35 +31,39 @@ The simulation seeds from real FY22Q4 financial data. Each subsequent quarter us
 
 Each quarter's AIE board received the simulated financial state and external market context (*qualitative signals derived from real FY22Q4 documentation, then fed to Claude*) and made independent strategic decisions.
 
-### Baseline - standard board
+### Baseline (standard 10-member AIE board)
 
-| Quarter | Revenue Sim | Revenue Actual | Delta |
-|---------|------------|---------------|-------|
-| FY23Q1  | $53,458M   | $52,747M      | +$711M |
-| FY23Q2  | $55,531M   | $52,857M      | +$2,674M |
-| FY23Q3  | $58,808M   | $56,189M      | +$2,619M |
-| FY23Q4  | $64,688M   | $56,189M      | +$8,500M |
+#### Revenue (M)
+| Quarter | Simulated | Actual | Delta |
+|---------|----------:|-------:|------:|
+| FY23Q1 | $53,458 | $52,747 | +$711 |
+| FY23Q2 | $55,531 | $52,857 | +$2,674 |
+| FY23Q3 | $58,808 | $56,189 | +$2,619 |
+| FY23Q4 | $64,688 | $56,189 | +$8,500 |
 
-| Quarter | Op. Margin Sim | Op. Margin Actual | Delta |
-|---------|---------------|------------------|-------|
-| FY23Q1  | 39.6%         | 38.7%            | +1.0% |
-| FY23Q2  | 39.7%         | 42.3%            | −2.6% |
-| FY23Q3  | 37.3%         | 43.2%            | −5.8% |
-| FY23Q4  | 34.5%         | 43.2%            | −8.7% |
+#### Op. Margin (%)
+| Quarter | Simulated | Actual | Delta |
+|---------|----------:|-------:|------:|
+| FY23Q1 | 39.6% | 38.7% | +1.0% |
+| FY23Q2 | 39.7% | 42.3% | -2.6% |
+| FY23Q3 | 37.3% | 43.2% | -5.8% |
+| FY23Q4 | 34.5% | 43.2% | -8.7% |
 
-| Quarter | Cash Sim  | Cash Actual | Delta |
-|---------|----------|------------|-------|
-| FY23Q1  | $12,431M | $15,646M   | −$3,215M |
-| FY23Q2  | $11,431M | $26,562M   | −$15,131M |
-| FY23Q3  | $9,876M  | $34,704M   | −$24,828M |
-| FY23Q4  | $8,235M  | $34,704M   | −$26,469M |
+#### Cash (M)
+| Quarter | Simulated | Actual | Delta |
+|---------|----------:|-------:|------:|
+| FY23Q1 | $12,431 | $15,646 | -$3,215 |
+| FY23Q2 | $11,431 | $26,562 | -$15,131 |
+| FY23Q3 | $9,876 | $34,704 | -$24,828 |
+| FY23Q4 | $8,235 | $34,704 | -$26,469 |
 
-| Quarter | Headcount Sim | Headcount Actual | Delta |
-|---------|--------------|-----------------|-------|
-| FY23Q1  | 232,050      | 221,000         | +11,050 |
-| FY23Q2  | 235,971      | 221,000         | +14,971 |
-| FY23Q3  | 251,469      | 228,000         | +23,469 |
-| FY23Q4  | 264,343      | 238,000         | +26,343 |
+#### Headcount
+| Quarter | Simulated | Actual | Delta |
+|---------|----------:|-------:|------:|
+| FY23Q1 | 232,050 | 221,000 | +11,050 |
+| FY23Q2 | 235,971 | 221,000 | +14,971 |
+| FY23Q3 | 251,469 | 228,000 | +23,469 |
+| FY23Q4 | 264,343 | 238,000 | +26,343 |
 
 <img src="./results/charts/baseline_comparison_charts.png" width="900"/>
 
@@ -97,37 +101,41 @@ Two variants were run against the baseline to test the sensitivity of outcomes t
 
 **Hypothesis:** A more financially disciplined CFO should apply heavier NO votes on growth and hiring actions, reducing cash depletion and margin compression.
 
-  Revenue (M)
-  Quarter         Simulated         Actual          Delta
-  ────────── ────────────── ────────────── ──────────────
-  FY23Q1            $54,358        $52,747 +       $1,611
-  FY23Q2            $56,576        $52,857 +       $3,719
-  FY23Q3            $60,205        $56,189 +       $4,016
-  FY23Q4            $63,215        $56,189 +       $7,026
+#### Revenue (M)
 
-  Op. Margin (%)
-  Quarter         Simulated         Actual          Delta
-  ────────── ────────────── ────────────── ──────────────
-  FY23Q1              39.9%          38.7% +         1.3%
-  FY23Q2              39.6%          42.3%         -2.7%
-  FY23Q3              41.0%          43.2%         -2.2%
-  FY23Q4              38.3%          43.2%         -4.9%
+| Quarter | Simulated | Actual | Delta |
+|---------|----------:|-------:|------:|
+| FY23Q1 | $54,358 | $52,747 | +$1,611 |
+| FY23Q2 | $56,576 | $52,857 | +$3,719 |
+| FY23Q3 | $60,205 | $56,189 | +$4,016 |
+| FY23Q4 | $63,215 | $56,189 | +$7,026 |
 
-  Cash (M)
-  Quarter         Simulated         Actual          Delta
-  ────────── ────────────── ────────────── ──────────────
-  FY23Q1            $11,431        $15,646       $-4,215
-  FY23Q2            $10,431        $26,562      $-16,131
-  FY23Q3             $9,850        $34,704      $-24,854
-  FY23Q4             $9,420        $34,704      $-25,284
+#### Op. Margin (%)
 
-  Headcount
-  Quarter         Simulated         Actual          Delta
-  ────────── ────────────── ────────────── ──────────────
-  FY23Q1            226,100        221,000 +        5,100
-  FY23Q2            228,750        221,000 +        7,750
-  FY23Q3            235,600        228,000 +        7,600
-  FY23Q4            247,380        238,000 +        9,380
+| Quarter | Simulated | Actual | Delta |
+|---------|----------:|-------:|------:|
+| FY23Q1 | 39.9% | 38.7% | +1.3% |
+| FY23Q2 | 39.6% | 42.3% | -2.7% |
+| FY23Q3 | 41.0% | 43.2% | -2.2% |
+| FY23Q4 | 38.3% | 43.2% | -4.9% |
+
+#### Cash (M)
+
+| Quarter | Simulated | Actual | Delta |
+|---------|----------:|-------:|------:|
+| FY23Q1 | $11,431 | $15,646 | -$4,215 |
+| FY23Q2 | $10,431 | $26,562 | -$16,131 |
+| FY23Q3 | $9,850 | $34,704 | -$24,854 |
+| FY23Q4 | $9,420 | $34,704 | -$25,284 |
+
+#### Headcount
+
+| Quarter | Simulated | Actual | Delta |
+|---------|----------:|-------:|------:|
+| FY23Q1 | 226,100 | 221,000 | +5,100 |
+| FY23Q2 | 228,750 | 221,000 | +7,750 |
+| FY23Q3 | 235,600 | 228,000 | +7,600 |
+| FY23Q4 | 247,380 | 238,000 | +9,380 |
 
 <img src="./results/charts/conservative_cfo_comparison_charts.png" width="900"/>
 
@@ -150,38 +158,41 @@ but could not address the structural cash gap, confirming that the limitation li
 
 **Hypothesis:** This tests whether **role identity** or **AES weight vector** drives board behavior. If the swapped CFO starts pushing R&D and the swapped CTO starts vetoing spending, weights dominate. If both agents continue behaving according to their titles despite the swapped weights, role identity (as interpreted by Claude from the title in Prompt D) dominates.
 
-Revenue (M)
-  Quarter         Simulated         Actual          Delta
-  ────────── ────────────── ────────────── ──────────────
-  FY23Q1            $53,758        $52,747 +       $1,011
-  FY23Q2            $56,046        $52,857 +       $3,189
-  FY23Q3            $58,248        $56,189 +       $2,059
-  FY23Q4            $54,308        $56,189       $-1,881
+#### Revenue (M)
 
-  Op. Margin (%)
-  Quarter         Simulated         Actual          Delta
-  ────────── ────────────── ────────────── ──────────────
-  FY23Q1              40.7%          38.7% +         2.0%
-  FY23Q2              36.1%          42.3%         -6.2%
-  FY23Q3              35.8%          43.2%         -7.4%
-  FY23Q4              39.5%          43.2%         -3.6%
+| Quarter | Simulated | Actual | Delta |
+|---------|----------:|-------:|------:|
+| FY23Q1 | $53,758 | $52,747 | +$1,011 |
+| FY23Q2 | $56,046 | $52,857 | +$3,189 |
+| FY23Q3 | $58,248 | $56,189 | +$2,059 |
+| FY23Q4 | $54,308 | $56,189 | -$1,881 |
 
-  Cash (M)
-  Quarter         Simulated         Actual          Delta
-  ────────── ────────────── ────────────── ──────────────
-  FY23Q1            $12,431        $15,646       $-3,215
-  FY23Q2            $10,856        $26,562      $-15,706
-  FY23Q3             $9,534        $34,704      $-25,170
-  FY23Q4            $12,931        $34,704      $-21,773
+#### Op. Margin (%)
 
-  Headcount
-  Quarter         Simulated         Actual          Delta
-  ────────── ────────────── ────────────── ──────────────
-  FY23Q1            221,000        221,000 +            0
-  FY23Q2            234,000        221,000 +       13,000
-  FY23Q3            245,700        228,000 +       17,700
-  FY23Q4            226,000        238,000       -12,000
+| Quarter | Simulated | Actual | Delta |
+|---------|----------:|-------:|------:|
+| FY23Q1 | 40.7% | 38.7% | +2.0% |
+| FY23Q2 | 36.1% | 42.3% | -6.2% |
+| FY23Q3 | 35.8% | 43.2% | -7.4% |
+| FY23Q4 | 39.5% | 43.2% | -3.6% |
 
+#### Cash (M)
+
+| Quarter | Simulated | Actual | Delta |
+|---------|----------:|-------:|------:|
+| FY23Q1 | $12,431 | $15,646 | -$3,215 |
+| FY23Q2 | $10,856 | $26,562 | -$15,706 |
+| FY23Q3 | $9,534 | $34,704 | -$25,170 |
+| FY23Q4 | $12,931 | $34,704 | -$21,773 |
+
+#### Headcount
+
+| Quarter | Simulated | Actual | Delta |
+|---------|----------:|-------:|------:|
+| FY23Q1 | 221,000 | 221,000 | 0 |
+| FY23Q2 | 234,000 | 221,000 | +13,000 |
+| FY23Q3 | 245,700 | 228,000 | +17,700 |
+| FY23Q4 | 226,000 | 238,000 | -12,000 |
 <img src="./results/charts/personality_swap_comparison_charts.png" width="900"/>
 
 The board overshot revenue in Q1–Q3 but landed below actual in Q4 (−$1,881M) - the first 
