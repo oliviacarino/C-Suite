@@ -13,7 +13,6 @@ Note that this is a very, *very* satirical take on the latest trend in tech: job
 
 1. Does an AI-simulated C-suite produce decisions measurably different from its human-led counterpart?
 2. Do those decisions lead to better, worse, or statistically indistinguishable simulated outcomes?
-3. *(Optional)* Does multi-agent executive communication improve decision quality?
 
 ## *TLDR*
 
@@ -24,6 +23,182 @@ Across all runs, two things held constant: the board always identified the corre
 What varied was the growth/restraint tradeoff. The baseline 10-agent board overshot revenue in every quarter, peaking at +$8.5B in Q4, and hired aggressively throughout. The conservative CFO in Run 1 moderated headcount meaningfully (Q3 gap narrowed from +23K to +7.6K) but had almost no effect on cash. The personality swap in Run 2 produced the most interesting emergent behavior - the board self-corrected in Q4, undershooting revenue for the first time and recovering cash slightly, driven purely by the deteriorating state it had created.
 
 The through-line: no configuration found the balance the real company achieved between growth investment and financial discipline. The real executives' edge wasn't strategic vision - the AI board got that right. It was knowing when to stop.
+
+## Simulation Design 
+
+### Agents
+Ten AIEs map to real C-suite titles: CEO, CFO, COO, CPO, CTO, CMO, CCO, VP&Chair, EVP Strategy, and EVP Global Sales. Each agent has role-specific AES weight vectors that determine how they evaluate proposed actions, and domain expertise bonuses that amplify their voting influence in their primary area.
+
+### Decision loop (per quarter)
+1. **Qualitative extraction (Prompt C)** - Claude reads the earnings transcript, press release, and product release list and derives quantitative signals: hiring freeze, layoff activity, headcount estimates, AI investment focus, competitive pressure, investor sentiment, etc.
+2. **State initialization** - Direct financial data (revenue, margins, R&D, capex, segments) is parsed from the XLS. Derived signals from Prompt C are merged in to form the full `CompanyState` vector.
+3. **Proposal phase (Prompt D)** - Each AIE receives a context packet with the full company state and external market context, then proposes up to 3 actions from the `ActionLibrary`.
+4. **Effect prediction (Prompt A)** - For each unique proposed action, Claude predicts directional effects on all CompanyState variables (scale: −3 to +3).
+5. **Voting (AES → AWS)** - Each agent computes an Action Evaluation Score (weighted sum of effects × role priorities), derives a YES/NO vote from the sign, applies domain bonuses, and contributes a weighted vote. Actions with `FinalDecisionScore > 0` pass.
+6. **Action selection** - The top K passing actions by score are implemented (default K=5).
+7. **State transition (Prompt B)** - Claude applies all approved actions simultaneously to the `CompanyState`, with realistic second-order effects, producing the end-of-quarter state.
+8. **Logging** - Full per-quarter JSON log: start state, all proposals, all vote scores, approved actions, end state, derivation notes.
+
+### Scoring math
+
+**AES (individual):**
+
+<img src="./images/AES_score.png" width="400"/>
+
+Where `i` is the index of the current state vector,
+`w_agent,i` is the role-priority weight for state variable `i` (field within the current `CompanyState`, range −4 to +4), and `Effect_i(a)` is the Claude-predicted directional impact of action `a` on variable `i` (e.g., −2, 0, +3).
+
+**Vote direction:**
+```
+vote = +1 if AES > 0,  −1 if AES < 0,  0 if AES = 0
+```
+
+**Vote weight (AWS):**
+```
+VoteWeight = VoteDirection × (1 + DomainBonus)
+```
+Domain bonus = 2 if the action falls in the agent's primary domain, else 0.
+
+**Final decision:**
+
+<img src="./images/Final_Decision_Score.png" width="400"/>
+
+
+## Project structure
+
+```
+csuite/
+├── main.py                        # Entry point - parsing + simulation
+├── config.py                      # Paths, API config, quarter directory map
+├── .env                           
+├── data/
+│   ├── input/
+│   │   ├── FY22Q4/                # Init quarter asset files
+│   │   └── FY2023/
+│   │       ├── Q1/
+│   │       ├── Q2/ ...
+│   │       ├── Q3/ ...
+│   │       └── Q4/ ...
+│   └── processed/                 # CompanyState JSONs (one per quarter)
+│
+├── agents/
+│   └── board.py                   # 10 AIE agents with AES weights + personalities
+│
+├── simulation/
+│   ├── action_library.py          # 30 actions + AES category map
+│   └── voting_engine.py           # AES → vote → AWS → DecisionScore
+│
+├── sim/
+│   └── pipeline.py                # Full quarterly sim
+│
+├── prompts/
+│   ├── prompt_a_effect_prediction.py
+│   ├── prompt_b_state_transition.py
+│   ├── prompt_c_derive_qualitative_data.py
+│   └── prompt_d_aie_proposal.py
+│
+├── util/
+│   ├── parse_financials.py        # XLS → Financials + Segments dict
+│   ├── parse_qualitative.py       # DOCX / PPTX / PDF → plain text
+│   └── compare.py                 # Simulated vs actual comparison + charts
+│
+├── test/
+│   ├── test_parse.py              # Parser validation (no API calls)
+│   ├── test_voting.py             # Voting engine validation (no API calls)
+│   ├── test_prompt_a.py           # Prompt A integration test
+│   ├── test_prompt_d.py           # Prompt D integration test
+│   └── test_pipeline.py           # Full pipeline integration test
+│
+└── results/
+    ├── baseline/
+    ├── conservative_cfo/
+    ├── personality_swap/
+    └── charts/
+```
+
+
+## Setup
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Create `.env` in the project root with your `ANTHROPIC_API_KEY`
+
+
+## Running
+
+### 1. Validate parsers (no API calls)
+```bash
+python test/test_parse.py              # all quarters
+python test/test_parse.py FY22Q4       # single quarter
+```
+
+### 2. Validate agents and voting engine (no API calls)
+```bash
+python test/test_voting.py
+```
+
+### 3. Parse FY22Q4 seed state
+```bash
+python main.py --dry-run    # parse only, skip Prompt C
+python main.py              # full parse including Prompt C API calls
+```
+Only FY22Q4 is required as the simulation seed. Outputs `data/processed/FY22Q4_company_state.json`.
+
+### 4. Run the simulation
+```bash
+python main.py --simulate                     # full FY2023 (all 4 quarters)
+python main.py --simulate --quarter FY23Q1    # single quarter (uses real parsed data)
+```
+Outputs one `results/<QUARTER>_simulation_log.json` per quarter.
+
+### 5. Compare results
+```bash
+python util/compare.py           # prints table + displays charts
+python util/compare.py --save    # saves charts to results/charts/
+```
+
+
+## CompanyState vector
+
+- **DIRECT** - parsed directly from the company's financial XLS files (income statement, balance sheet, cash flow, segment revenue). These are exact figures from the real earnings data.
+- **CLAUDE-DERIVED** - extracted by Prompt C from qualitative documents (earnings transcript, press release, product release list) and quantified on a 1–10 scale.
+- **MIXED** - some fields in the section come from direct data, others are Claude-derived. See inline comments for which is which.
+
+```python
+CompanyState = {
+    "Financials": {          # DIRECT
+        "revenue", "cost_of_revenue", "gross_margin",
+        "operating_income", "net_income", "cash_and_equivalents",
+        "total_operating_expenses", "rd_spending",
+        "sales_marketing_spending", "capex"
+    },
+    "Segments": {            # DIRECT
+        "productivity_revenue",
+        "intelligent_cloud_revenue",
+        "personal_computing_revenue"
+    },
+    "Human_Impacts": {       # MIXED - total_employees direct; rest Claude-derived
+        "total_employees", "hiring_freeze",
+        "layoffs_this_quarter", "engineering_headcount", "sales_headcount"
+    },
+    "Growth_Signals": {      # CLAUDE-DERIVED - Prompt C, scale 1–10
+        "ai_investment_focus", "innovation_index",
+        "competitive_pressure", "regulatory_pressure", "brand_strength"
+    },
+    "Market_Signals": {      # CLAUDE-DERIVED + direct
+        "investor_sentiment", "growth_expectation", "stock_price"
+    }
+}
+```
+
+
+## Action library
+
+30 actions across 8 categories: R&D Investment, Innovation Index, Revenue, Brand Strength, Headcount, Operating Cost, Cash Reserves, and Multi-category / Governance. Each AIE proposes up to 3 actions per quarter from this fixed list. The top 5 determined by the `FinalDecisionScore` are implemented each quarter.
 
 ## Results
 
@@ -204,183 +379,6 @@ where it increased. Operating margin also rebounded from 35.8% to 39.5% in Q4, c
 with the headcount reduction. The board never explicitly "knew" it was overspending - it 
 simply responded to the deteriorating state it had created, producing a correction without 
 any external intervention.
-
-
-## How it works
-
-### Agents
-Ten AIEs map to real C-suite titles: CEO, CFO, COO, CPO, CTO, CMO, CCO, VP&Chair, EVP Strategy, and EVP Global Sales. Each agent has role-specific AES weight vectors that determine how they evaluate proposed actions, and domain expertise bonuses that amplify their voting influence in their primary area.
-
-### Decision loop (per quarter)
-1. **Qualitative extraction (Prompt C)** - Claude reads the earnings transcript, press release, and product release list and derives quantitative signals: hiring freeze, layoff activity, headcount estimates, AI investment focus, competitive pressure, investor sentiment, etc.
-2. **State initialization** - Direct financial data (revenue, margins, R&D, capex, segments) is parsed from the XLS. Derived signals from Prompt C are merged in to form the full `CompanyState` vector.
-3. **Proposal phase (Prompt D)** - Each AIE receives a context packet with the full company state and external market context, then proposes up to 3 actions from the `ActionLibrary`.
-4. **Effect prediction (Prompt A)** - For each unique proposed action, Claude predicts directional effects on all CompanyState variables (scale: −3 to +3).
-5. **Voting (AES → AWS)** - Each agent computes an Action Evaluation Score (weighted sum of effects × role priorities), derives a YES/NO vote from the sign, applies domain bonuses, and contributes a weighted vote. Actions with `FinalDecisionScore > 0` pass.
-6. **Action selection** - The top K passing actions by score are implemented (default K=5).
-7. **State transition (Prompt B)** - Claude applies all approved actions simultaneously to the `CompanyState`, with realistic second-order effects, producing the end-of-quarter state.
-8. **Logging** - Full per-quarter JSON log: start state, all proposals, all vote scores, approved actions, end state, derivation notes.
-
-### Scoring math
-
-**AES (individual):**
-
-<img src="./images/AES_score.png" width="400"/>
-
-Where `i` is the index of the current state vector,
-`w_agent,i` is the role-priority weight for state variable `i` (field within the current `CompanyState`, range −4 to +4), and `Effect_i(a)` is the Claude-predicted directional impact of action `a` on variable `i` (e.g., −2, 0, +3).
-
-**Vote direction:**
-```
-vote = +1 if AES > 0,  −1 if AES < 0,  0 if AES = 0
-```
-
-**Vote weight (AWS):**
-```
-VoteWeight = VoteDirection × (1 + DomainBonus)
-```
-Domain bonus = 2 if the action falls in the agent's primary domain, else 0.
-
-**Final decision:**
-
-<img src="./images/Final_Decision_Score.png" width="400"/>
-
-
-## Project structure
-
-```
-csuite/
-├── main.py                        # Entry point - parsing + simulation
-├── config.py                      # Paths, API config, quarter directory map
-├── .env                           
-├── data/
-│   ├── input/
-│   │   ├── FY22Q4/                # Init quarter asset files
-│   │   └── FY2023/
-│   │       ├── Q1/
-│   │       ├── Q2/ ...
-│   │       ├── Q3/ ...
-│   │       └── Q4/ ...
-│   └── processed/                 # CompanyState JSONs (one per quarter)
-│
-├── agents/
-│   └── board.py                   # 10 AIE agents with AES weights + personalities
-│
-├── simulation/
-│   ├── action_library.py          # 30 actions + AES category map
-│   └── voting_engine.py           # AES → vote → AWS → DecisionScore
-│
-├── sim/
-│   └── pipeline.py                # Full quarterly sim
-│
-├── prompts/
-│   ├── prompt_a_effect_prediction.py
-│   ├── prompt_b_state_transition.py
-│   ├── prompt_c_derive_qualitative_data.py
-│   └── prompt_d_aie_proposal.py
-│
-├── util/
-│   ├── parse_financials.py        # XLS → Financials + Segments dict
-│   ├── parse_qualitative.py       # DOCX / PPTX / PDF → plain text
-│   └── compare.py                 # Simulated vs actual comparison + charts
-│
-├── test/
-│   ├── test_parse.py              # Parser validation (no API calls)
-│   ├── test_voting.py             # Voting engine validation (no API calls)
-│   ├── test_prompt_a.py           # Prompt A integration test
-│   ├── test_prompt_d.py           # Prompt D integration test
-│   └── test_pipeline.py           # Full pipeline integration test
-│
-└── results/
-    ├── baseline/
-    ├── conservative_cfo/
-    ├── personality_swap/
-    └── charts/
-```
-
-
-## Setup
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-Create `.env` in the project root with your `ANTHROPIC_API_KEY`
-
-
-## Running
-
-### 1. Validate parsers (no API calls)
-```bash
-python test/test_parse.py              # all quarters
-python test/test_parse.py FY22Q4       # single quarter
-```
-
-### 2. Validate agents and voting engine (no API calls)
-```bash
-python test/test_voting.py
-```
-
-### 3. Parse FY22Q4 seed state
-```bash
-python main.py --dry-run    # parse only, skip Prompt C
-python main.py              # full parse including Prompt C API calls
-```
-Only FY22Q4 is required as the simulation seed. Outputs `data/processed/FY22Q4_company_state.json`.
-
-### 4. Run the simulation
-```bash
-python main.py --simulate                     # full FY2023 (all 4 quarters)
-python main.py --simulate --quarter FY23Q1    # single quarter (uses real parsed data)
-```
-Outputs one `results/<QUARTER>_simulation_log.json` per quarter.
-
-### 5. Compare results
-```bash
-python util/compare.py           # prints table + displays charts
-python util/compare.py --save    # saves charts to results/charts/
-```
-
-
-## CompanyState vector
-
-- **DIRECT** - parsed directly from the company's financial XLS files (income statement, balance sheet, cash flow, segment revenue). These are exact figures from the real earnings data.
-- **CLAUDE-DERIVED** - extracted by Prompt C from qualitative documents (earnings transcript, press release, product release list) and quantified on a 1–10 scale.
-- **MIXED** - some fields in the section come from direct data, others are Claude-derived. See inline comments for which is which.
-
-```python
-CompanyState = {
-    "Financials": {          # DIRECT
-        "revenue", "cost_of_revenue", "gross_margin",
-        "operating_income", "net_income", "cash_and_equivalents",
-        "total_operating_expenses", "rd_spending",
-        "sales_marketing_spending", "capex"
-    },
-    "Segments": {            # DIRECT
-        "productivity_revenue",
-        "intelligent_cloud_revenue",
-        "personal_computing_revenue"
-    },
-    "Human_Impacts": {       # MIXED - total_employees direct; rest Claude-derived
-        "total_employees", "hiring_freeze",
-        "layoffs_this_quarter", "engineering_headcount", "sales_headcount"
-    },
-    "Growth_Signals": {      # CLAUDE-DERIVED - Prompt C, scale 1–10
-        "ai_investment_focus", "innovation_index",
-        "competitive_pressure", "regulatory_pressure", "brand_strength"
-    },
-    "Market_Signals": {      # CLAUDE-DERIVED + direct
-        "investor_sentiment", "growth_expectation", "stock_price"
-    }
-}
-```
-
-
-## Action library
-
-30 actions across 8 categories: R&D Investment, Innovation Index, Revenue, Brand Strength, Headcount, Operating Cost, Cash Reserves, and Multi-category / Governance. Each AIE proposes up to 3 actions per quarter from this fixed list. The top 5 determined by the `FinalDecisionScore` are implemented each quarter.
 
 ## Known limitations
 
