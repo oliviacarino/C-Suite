@@ -73,6 +73,7 @@ BOARD: list[AIEAgent] = [
             headcount=1, rd_investment=3, brand_strength=3, innovation_index=3,
         ),
     ),
+    # baseline CFO
     AIEAgent(
         title="Executive Vice President & Chief Financial Officer",
         primary_domain="cash_reserves",
@@ -85,6 +86,20 @@ BOARD: list[AIEAgent] = [
             headcount=-1, rd_investment=-1, brand_strength=1, innovation_index=1,
         ),
     ),
+    # Run 1 — Conservative CFO
+    # AIEAgent(
+    #     title="Executive Vice President & Chief Financial Officer",
+    #     primary_domain="cash_reserves",
+    #     role_archetype=(
+    #         "extremely risk-averse and cash-protective, vetoes any action that "
+    #         "meaningfully depletes reserves, enforces strict cost discipline, "
+    #         "prioritizes margin preservation over growth bets"
+    #     ),
+    #     aes_weights=AESWeights(
+    #         revenue=1, operating_cost=-4, cash_reserves=4,
+    #         headcount=-3, rd_investment=-3, brand_strength=0, innovation_index=-1,
+    #     ),
+    # ),
     AIEAgent(
         title="Vice Chair & President",
         primary_domain="brand_strength",
@@ -157,6 +172,32 @@ BOARD: list[AIEAgent] = [
             headcount=2, rd_investment=1, brand_strength=3, innovation_index=1,
         ),
     ),
+    Run 2 — Personality Swap (CFO gets CTO weights, CTO gets CFO weights)
+    AIEAgent(
+        title="Executive Vice President & Chief Financial Officer",
+        primary_domain="cash_reserves",
+        role_archetype=(
+            "technically ambitious and AI-forward, advocates for R&D investment "
+            "and infrastructure modernization"
+        ),
+        aes_weights=AESWeights(
+            revenue=2, operating_cost=-1, cash_reserves=1,
+            headcount=2, rd_investment=4, brand_strength=1, innovation_index=4,
+        ),
+    ),
+    AIEAgent(
+        title="Chief Technology Officer, Business & AI",
+        primary_domain="rd_investment",
+        role_archetype=(
+            "risk-sensitive and financially conservative, prioritizes liquidity "
+            "and cost discipline over growth bets"
+        ),
+        aes_weights=AESWeights(
+            revenue=2, operating_cost=-4, cash_reserves=4,
+            headcount=-1, rd_investment=-1, brand_strength=1, innovation_index=1,
+        ),
+    ),
+    # baseline CTO
     AIEAgent(
         title="Chief Technology Officer, Business & AI",
         primary_domain="rd_investment",
