@@ -16,7 +16,7 @@ Note that this is a very, *very* satirical take on the latest trend in tech: job
 
 ## *TLDR*
 
-Three simulations were run in total: a baseline with the standard 10-agent board, and two ablations testing different board configurations.
+Three simulations were run in total: a baseline with the standard 10-agent board, and two case studies testing different board configurations.
 
 Across all runs, two things held constant: the board always identified the correct strategic direction (AI-heavy, cloud-forward investment) simulating what the actual company did, and cash was always significantly underestimated due to the `ActionLibrary`'s absence of financing decisions. 
 
@@ -266,7 +266,7 @@ The divergences above are explainable, not random - and the board got several th
 
 **The divergences reveal something interesting.** Cash depletion and margin compression aren't signs of bad strategy - they're signs of a board with no mechanism to balance investment velocity with financial discipline. The real CFO applied guardrails the simulation couldn't model. The AI board behaved like an unconstrained growth-stage company: it found the right direction but had no accountability structures to say no. Real executives aren't necessarily smarter about strategy - they're better at restraint.
 
-## Ablation studies
+## Case studies
 
 Two variants were run against the baseline to test the sensitivity of outcomes to board composition and agent configuration.
 
