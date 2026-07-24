@@ -39,7 +39,7 @@ Ten AIEs map to real C-suite titles: CEO, CFO, COO, CPO, CTO, CMO, CCO, VP&Chair
 7. **State transition (Prompt B)** - Claude applies all approved actions simultaneously to the `CompanyState`, with realistic second-order effects, producing the end-of-quarter state.
 8. **Logging** - Full per-quarter JSON log: start state, all proposals, all vote scores, approved actions, end state, derivation notes.
 
-### Scoring math
+### Scoring System
 
 **AES (individual):**
 
@@ -62,60 +62,6 @@ Domain bonus = 2 if the action falls in the agent's primary domain, else 0.
 **Final decision:**
 
 <img src="./images/Final_Decision_Score.png" width="400"/>
-
-
-## Project structure
-
-```
-csuite/
-├── main.py                        # Entry point - parsing + simulation
-├── config.py                      # Paths, API config, quarter directory map
-├── .env                           
-├── data/
-│   ├── input/
-│   │   ├── FY22Q4/                # Init quarter asset files
-│   │   └── FY2023/
-│   │       ├── Q1/
-│   │       ├── Q2/ ...
-│   │       ├── Q3/ ...
-│   │       └── Q4/ ...
-│   └── processed/                 # CompanyState JSONs (one per quarter)
-│
-├── agents/
-│   └── board.py                   # 10 AIE agents with AES weights + personalities
-│
-├── simulation/
-│   ├── action_library.py          # 30 actions + AES category map
-│   └── voting_engine.py           # AES → vote → AWS → DecisionScore
-│
-├── sim/
-│   └── pipeline.py                # Full quarterly sim
-│
-├── prompts/
-│   ├── prompt_a_effect_prediction.py
-│   ├── prompt_b_state_transition.py
-│   ├── prompt_c_derive_qualitative_data.py
-│   └── prompt_d_aie_proposal.py
-│
-├── util/
-│   ├── parse_financials.py        # XLS → Financials + Segments dict
-│   ├── parse_qualitative.py       # DOCX / PPTX / PDF → plain text
-│   └── compare.py                 # Simulated vs actual comparison + charts
-│
-├── test/
-│   ├── test_parse.py              # Parser validation (no API calls)
-│   ├── test_voting.py             # Voting engine validation (no API calls)
-│   ├── test_prompt_a.py           # Prompt A integration test
-│   ├── test_prompt_d.py           # Prompt D integration test
-│   └── test_pipeline.py           # Full pipeline integration test
-│
-└── results/
-    ├── baseline/
-    ├── conservative_cfo/
-    ├── personality_swap/
-    └── charts/
-```
-
 
 ## Setup
 
@@ -240,8 +186,6 @@ Each quarter's AIE board received the simulated financial state and external mar
 | FY23Q3 | 251,469 | 228,000 | +23,469 |
 | FY23Q4 | 264,343 | 238,000 | +26,343 |
 
-<img src="./results/charts/baseline_comparison_charts.png" width="900"/>
-
 ### Key findings
 
 **Revenue - consistently overestimated, correct trajectory.** The AIE board tracked revenue direction correctly - both simulated and actual lines trend upward through the year. However the simulation ran progressively hot, with the Q4 delta reaching +$8.5B (+15%). The board's growth-oriented action mix (enterprise sales expansion, AI initiatives, cloud investment) compounded into increasingly optimistic revenue projections as the simulated state drifted further from reality each quarter.
@@ -312,8 +256,6 @@ Two variants were run against the baseline to test the sensitivity of outcomes t
 | FY23Q3 | 235,600 | 228,000 | +7,600 |
 | FY23Q4 | 247,380 | 238,000 | +9,380 |
 
-<img src="./results/charts/conservative_cfo_comparison_charts.png" width="900"/>
-
 Tightening the CFO's AES weights to aggressively penalize hiring and R&D investment 
 produced mixed results. Headcount overestimates improved meaningfully, the gap narrowed 
 from +17,700 (baseline Q3) to +7,600, and Q4 headcount delta dropped from +26,343 to 
@@ -368,7 +310,6 @@ but could not address the structural cash gap, confirming that the limitation li
 | FY23Q2 | 234,000 | 221,000 | +13,000 |
 | FY23Q3 | 245,700 | 228,000 | +17,700 |
 | FY23Q4 | 226,000 | 238,000 | -12,000 |
-<img src="./results/charts/personality_swap_comparison_charts.png" width="900"/>
 
 The board overshot revenue in Q1–Q3 but landed below actual in Q4 (−$1,881M) - the first 
 quarter where the simulation underperformed. This appears to be an emergent self-correction: 
